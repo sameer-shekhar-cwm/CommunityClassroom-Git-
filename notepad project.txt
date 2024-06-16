@@ -1,0 +1,449 @@
+
+package notepad;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import javax.swing.*;
+import java.awt.event.*;
+import java.io.*;
+import java.time.*;
+import javax.swing.event.*;
+
+
+
+//creating a frame for the application
+
+class MyFrame extends JFrame  
+{
+    
+    
+    //Creating Text Area
+    
+    //Creating buttons j1 adn j2 to control size of font.............
+    
+    //Creating text field to showcase the size of font........
+    
+    
+    
+    JTextArea ta;
+    
+    JButton j1,j2;
+    JTextField tf;
+    
+    File currentFile;
+    int fontSize=12;
+    
+    JPanel p1;
+    
+    MyFrame()
+    {
+        //creating a menu bar
+                
+        //adding file and edit options in menu
+        
+        //adding menu items for file menu
+        
+        //adding menu items to file menu bar
+        
+        JMenuBar mb=new JMenuBar();
+        
+               
+        JMenu file=new JMenu("File");
+        JMenu edit=new JMenu("Edit");
+        //JMenu size=new JMenu("Size");
+        
+               
+        JMenuItem New=new JMenuItem("New");
+        JMenuItem Open=new JMenuItem("Open");
+        JMenuItem Save=new JMenuItem("Save");
+        JMenuItem SaveAs=new JMenuItem("Save As");
+        JMenuItem Close=new JMenuItem("Close Tab");
+        JMenuItem CloseWindow=new JMenuItem("Close Window");
+        JMenuItem exit=new JMenuItem("Exit");
+        
+        
+        
+        file.add(New);
+        file.add(Open);
+        file.add(Save);
+        file.add(SaveAs);
+        file.add(Close);
+        file.add(CloseWindow);
+        file.add(exit);
+        
+        //adding menu items for edit menu
+        
+        //adding menu item to edit menu bar
+        
+        // adding file and edit options to menu bar..........
+        
+        
+        
+        
+        JMenuItem cut=new JMenuItem("Cut");
+        JMenuItem copy=new JMenuItem("Copy");
+        JMenuItem paste=new JMenuItem("Paste");
+        JMenuItem td=new JMenuItem("Time/Date");
+        
+        
+        
+        
+        edit.add(cut);
+        edit.add(copy);
+        edit.add(paste);
+        edit.add(td);
+        
+        
+        
+        mb.add(file);
+        mb.add(edit);
+        setJMenuBar(mb);
+        
+        
+        
+        //creating text area to write.................
+        
+        
+        
+        ta=new JTextArea();
+        JScrollPane sp=new JScrollPane(ta);
+        ta.setLineWrap(true);
+        
+        
+        add(sp,BorderLayout.CENTER);
+        
+        
+        
+        
+        //working of new option...........................
+        
+        
+        
+        
+        New.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        MyFrame myframe=new MyFrame();
+                        myframe.setSize(500, 500);
+                        myframe.setVisible(true);
+                                           }
+                });
+        
+        
+        //working of open option...............................
+        
+        
+        
+        
+        Open.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent a)
+            {
+                JFileChooser jc=new JFileChooser();
+                jc.showOpenDialog(MyFrame.this);
+                File f=jc.getSelectedFile();
+                
+                try
+                {
+                    FileInputStream fi=new FileInputStream(f);
+                    byte b[]=new byte[fi.available()];
+                    fi.read(b);
+                    String str=new String(b);
+                    ta.setText(str);
+                    fi.close();
+                    currentFile=f;
+                }
+                catch(Exception e){System.out.println("File Not Found");}
+            }
+        });
+        
+        
+        
+        //working of save function.............................
+        
+        
+        
+        
+        
+        Save.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent a)
+            {
+                
+                if(currentFile !=null)
+                {
+                    saveToFile( currentFile);
+                
+                }
+                else
+                { 
+                    saveAsFile();
+                }
+            
+            }
+                public void saveToFile(File file)
+                {
+                    try{
+                        FileOutputStream os=new FileOutputStream(file);
+                        os.write(ta.getText().getBytes());
+                        os.close();
+                    
+                         }
+                    catch(Exception e){}
+                }
+                public void saveAsFile()
+                {
+                    JFileChooser jc1=new JFileChooser();
+                int returnValue=jc1.showSaveDialog(MyFrame.this);
+                if (returnValue == JFileChooser.APPROVE_OPTION)
+                {
+                     File f3=jc1.getSelectedFile();
+                
+                saveToFile(f3);
+                }
+                
+                }
+                        
+        });
+        
+        
+        
+        
+        
+        
+              //Save As tab function.........................
+              
+              
+              
+              
+                
+         SaveAs.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent a)
+            {
+                JFileChooser j2=new JFileChooser();
+                j2.showSaveDialog(MyFrame.this);
+                File f2=j2.getSelectedFile();
+                
+                try{
+                        FileOutputStream os1=new FileOutputStream(f2);
+                        os1.write(ta.getText().getBytes());
+                        os1.close();
+                    
+                         }
+                    catch(Exception e){}
+                }});
+         
+         
+         
+         
+         
+         //close tab option functioning..............
+         
+         
+         
+         
+         
+         Close.addActionListener(new ActionListener()
+         {
+             public void actionPerformed(ActionEvent i)
+             {
+                 dispose();
+             }
+         });
+         
+         
+         
+         
+         //close window option functioning...................
+         
+         
+         
+         
+         
+         
+         CloseWindow.addActionListener(new ActionListener()
+         {
+             public void actionPerformed(ActionEvent e)
+             {
+                 System.exit(0);
+             }
+         });
+         
+         
+         
+         
+         // cut option for edit menu....................
+         
+         
+         
+         
+         
+        cut.addActionListener(new ActionListener()
+         {
+             public void actionPerformed(ActionEvent e)
+        {
+            String ST=ta.getSelectedText();
+            
+            if(ST!=null && !ST.isEmpty())
+            {
+                ta.replaceRange("", ta.getSelectionStart(), ta.getSelectionEnd());
+                
+                //String selection implements transferable which helps to trasnfer the text to clipboard.....................
+                
+                StringSelection selection=new StringSelection(ST);
+                
+                Clipboard cp=Toolkit.getDefaultToolkit().getSystemClipboard();
+                cp.setContents(selection, null);
+            }
+        }
+         });
+        
+        
+        
+        //paste option for edit menu................
+        
+        
+        
+        
+        
+        paste.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                Clipboard cp1=Toolkit.getDefaultToolkit().getSystemClipboard();
+                
+                if(cp1.isDataFlavorAvailable(DataFlavor.stringFlavor))
+                {
+                    try
+                    {
+                    String CC= (String)cp1.getData(DataFlavor.stringFlavor);
+                    
+                    int caretPos=ta.getCaretPosition();
+                    ta.insert(CC, caretPos);
+                }
+                    catch(Exception ex){}
+                }
+        }});
+        
+        
+        
+        
+        //copy option for edit menu............
+        
+        
+        
+        
+        
+        copy.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                String str2=ta.getSelectedText();
+                
+                StringSelection ss=new StringSelection(str2);
+                
+                Clipboard cp2=Toolkit.getDefaultToolkit().getSystemClipboard();
+                cp2.setContents(ss, null);
+                
+            }
+        });
+        
+        
+        
+        //time adn date class to get current date and time......................
+        
+        
+        
+        
+        
+        td.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                LocalDate dt=LocalDate.now(ZoneId.of("Asia/Kolkata"));
+                int Caret=ta.getCaretPosition();
+                ta.insert(dt.toString(), Caret);
+            }
+        });
+        
+        
+        
+        
+        
+        //size of font ...........
+        j1=new JButton(new ImageIcon("C:\\Users\\Sameer\\Downloads\\upload-fotor-2024051514530.png"));
+        j2=new JButton(new ImageIcon("C:\\Users\\Sameer\\Downloads\\down-arrow-fotor-202405151449.png"));
+        
+        tf=new JTextField(3);
+        tf.setText(String.valueOf(fontSize));
+        
+        j1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                fontSize++;
+                
+                //Font f1 = new Font(String fontName, int fontStyle, int fontSize)
+                ta.setFont(new Font(ta.getFont().getName(),Font.PLAIN,fontSize));
+                
+                tf.setText(String.valueOf(fontSize));
+            }
+        });
+        
+        j2.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if(fontSize>8){
+                fontSize--;
+                
+                //Font f1 = new Font(String fontName, int fontStyle, int fontSize)
+                ta.setFont(new Font(ta.getFont().getName(),Font.PLAIN,fontSize));
+                
+                tf.setText(String.valueOf(fontSize));
+            }}
+        });
+        
+        tf.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                fontSize=Integer.parseInt(tf.getText());
+                ta.setFont(new Font(ta.getFont().getName(),Font.PLAIN,fontSize));
+                tf.setText(String.valueOf(fontSize));
+            }});
+        
+        
+        //tf.setPreferredSize(new Dimension(30, tf.getPreferredSize().height));
+        
+       
+        p1=new JPanel();
+        p1.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        
+        
+        p1.add(j1);
+        p1.add(tf);
+        p1.add(j2);
+        
+        mb.add(p1);
+
+       
+        
+        
+}}
+
+public class Notepad {
+
+ 
+    public static void main(String[] args) {
+          MyFrame f=new MyFrame();
+        f.setSize(500, 500);
+        f.setVisible(true);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+}
